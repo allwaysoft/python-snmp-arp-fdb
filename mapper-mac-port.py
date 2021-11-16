@@ -98,14 +98,14 @@ if __name__ == "__main__":
 
     # Read ARP table
     print(" - Reading device ARP table...", file=sys.stderr)
-    atPhysAddress = snmp_walk('172.16.1.3', '1.3.6.1.2.1.3.1.1.2', 'hex', community='xccz2019')
+    atPhysAddress = snmp_walk('192.168.0.1', '1.3.6.1.2.1.3.1.1.2', 'hex', community='public')
     for oid, mac in atPhysAddress.items():
         ip = read_ipv4_from_oid_tail(oid, with_len=False)
         print(ip)
         print(mac)
     # Read dot1dBasePortIfIndex table
     print(" - Reading device dot1dBasePortIfIndex table...", file=sys.stderr)
-    dot1dBasePortIfIndex = snmp_walk('172.16.1.3', '1.3.6.1.2.1.17.1.4.1.2', 'int', community='xccz2019')
+    dot1dBasePortIfIndex = snmp_walk('192.168.0.1', '1.3.6.1.2.1.17.1.4.1.2', 'int', community='public')
     dot1dBasePort = {}
     for bid, id in dot1dBasePortIfIndex.items():
         ip = read_ipv4_from_oid_tail(bid, with_len=False)
@@ -116,7 +116,7 @@ if __name__ == "__main__":
 
     # Read ifDescr table
     print(" - Reading device ifDescr table...", file=sys.stderr)
-    ifDescr = snmp_walk('172.16.1.3', '1.3.6.1.2.1.2.2.1.2', 'str', community='xccz2019')
+    ifDescr = snmp_walk('192.168.0.1', '1.3.6.1.2.1.2.2.1.2', 'str', community='public')
     Descr = {}
     for id, desc in ifDescr.items():
         ip = read_ipv4_from_oid_tail(id, with_len=False)
@@ -133,7 +133,7 @@ if __name__ == "__main__":
 
     # Read dot1qTpFdbPort table
     print(" - Reading device dot1qTpFdbPort table...", file=sys.stderr)
-    dot1qTpFdbPort = snmp_walk('172.16.1.3', '1.3.6.1.2.1.17.7.1.2.2.1.2', 'int', community='xccz2019')
+    dot1qTpFdbPort = snmp_walk('192.168.0.1', '1.3.6.1.2.1.17.4.3.1.2', 'int', community='public')
     dot1qTpFdb = {}
     for mac, bid in dot1qTpFdbPort.items():
         macdec = read_mac_from_oid_tail(mac, with_len=False)
@@ -144,6 +144,7 @@ if __name__ == "__main__":
 
     dot1qTpFdbDescr = {}
     for key in dot1qTpFdb.keys():
-        dot1qTpFdbDescr[key] = dot1dBasePortDescr[dot1qTpFdb[key]]
+        if dot1qTpFdb[key] in dot1dBasePortDescr.keys():
+            dot1qTpFdbDescr[key] = dot1dBasePortDescr[dot1qTpFdb[key]]
 
     print(dot1qTpFdbDescr)
